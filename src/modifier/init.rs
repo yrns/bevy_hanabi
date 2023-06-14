@@ -538,6 +538,7 @@ impl InitModifier for InitLifetimeModifier {
 ///
 /// [`SizeOverLifetimeModifier`]: crate::SizeOverLifetimeModifier
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitSizeModifier {
     /// The size to initialize each particle with.
     ///

@@ -95,7 +95,7 @@ impl<T: Copy + FromReflect> From<T> for Value<T> {
 /// [`Attribute::SIZE`]: crate::Attribute::SIZE
 /// [`Attribute::SIZE2`]: crate::Attribute::SIZE2
 #[derive(Debug, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
-#[reflect(Default)]
+//#[reflect(Default)]
 pub enum DimValue {
     /// Scalar.
     D1(Value<f32>),

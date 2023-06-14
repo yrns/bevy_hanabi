@@ -17,6 +17,7 @@ use bevy::{
 use crate::{
     asset::{EffectAsset, EffectAssetLoader},
     compile_effects, gather_removed_effects,
+    modifier::*,
     render::{
         extract_effect_events, extract_effects, prepare_effects, queue_effects,
         DispatchIndirectPipeline, DrawEffects, EffectAssetEvents, EffectBindGroups, EffectSystems,
@@ -24,7 +25,8 @@ use crate::{
         ParticlesUpdatePipeline, ShaderCache, SimParams, VfxSimulateDriverNode, VfxSimulateNode,
     },
     spawn::{self, Random},
-    tick_spawners, ParticleEffect, RemovedEffectsEvent, Spawner,
+    tick_spawners, Gradient, GradientKey, MotionIntegration, ParticleEffect, Property,
+    RemovedEffectsEvent, SimulationCondition, SimulationSpace, Spawner, Value,
 };
 
 pub mod main_graph {
@@ -88,10 +90,87 @@ impl Plugin for HanabiPlugin {
             .add_system(compile_effects.in_set(EffectSystems::CompileEffects))
             .add_system(gather_removed_effects.in_set(EffectSystems::GatherRemovedEffects));
 
-        // Register the component reflection
-        app.register_type::<EffectAsset>();
+        // For particle effect serialization:
         app.register_type::<ParticleEffect>();
         app.register_type::<Spawner>();
+        app.register_type::<Option<Spawner>>();
+
+        // For asset serialization. Until https://github.com/bevyengine/bevy/issues/4154 is
+        // resolved, every type has to be registered individually.
+        app.register_asset_reflect::<EffectAsset>()
+            .register_type::<Value<f32>>()
+            .register_type::<Value<Vec2>>()
+            .register_type::<Value<Vec3>>()
+            .register_type::<Value<Vec4>>()
+            .register_type_data::<Value<f32>, ReflectDefault>()
+            .register_type_data::<Value<Vec2>, ReflectDefault>()
+            .register_type_data::<Value<Vec3>, ReflectDefault>()
+            .register_type_data::<Value<Vec4>, ReflectDefault>()
+            .register_type::<(f32, f32)>()
+            .register_type::<(Vec2, Vec2)>()
+            .register_type::<(Vec3, Vec3)>()
+            .register_type::<(Vec4, Vec4)>()
+            .register_type_data::<(f32, f32), ReflectDefault>()
+            .register_type_data::<(Vec2, Vec2), ReflectDefault>()
+            .register_type_data::<(Vec3, Vec3), ReflectDefault>()
+            .register_type_data::<(Vec4, Vec4), ReflectDefault>()
+            .register_type::<crate::DimValue>()
+            .register_type::<SimulationSpace>()
+            .register_type::<SimulationCondition>()
+            //.register_type::<BoxedModifier>() // does not work yet
+            .register_type::<Property>()
+            .register_type::<MotionIntegration>()
+            .register_type::<ShapeDimension>()
+            .register_type::<Gradient<Vec4>>()
+            .register_type::<GradientKey<Vec4>>()
+            .register_type::<Vec<GradientKey<Vec4>>>()
+            .register_type::<Gradient<Vec2>>()
+            .register_type::<GradientKey<Vec2>>()
+            .register_type::<Vec<GradientKey<Vec2>>>()
+            .register_type::<InitPositionCircleModifier>()
+            .register_type::<InitPositionSphereModifier>()
+            .register_type::<InitPositionCone3dModifier>()
+            .register_type::<InitVelocityCircleModifier>()
+            .register_type::<InitVelocitySphereModifier>()
+            .register_type::<InitVelocityTangentModifier>()
+            .register_type::<InitSizeModifier>()
+            .register_type::<InitAgeModifier>()
+            .register_type::<InitLifetimeModifier>()
+            .register_type::<AccelModifier>()
+            .register_type::<RadialAccelModifier>()
+            .register_type::<TangentAccelModifier>()
+            .register_type::<ForceFieldModifier>()
+            .register_type::<LinearDragModifier>()
+            .register_type::<AabbKillModifier>()
+            .register_type::<ParticleTextureModifier>()
+            .register_type::<SetColorModifier>()
+            .register_type::<ColorOverLifetimeModifier>()
+            .register_type::<SetSizeModifier>()
+            .register_type::<SizeOverLifetimeModifier>()
+            .register_type::<BillboardModifier>()
+            .register_type::<OrientAlongVelocityModifier>()
+            .register_type::<Option<InitPositionCircleModifier>>()
+            .register_type::<Option<InitPositionSphereModifier>>()
+            .register_type::<Option<InitPositionCone3dModifier>>()
+            .register_type::<Option<InitVelocityCircleModifier>>()
+            .register_type::<Option<InitVelocitySphereModifier>>()
+            .register_type::<Option<InitVelocityTangentModifier>>()
+            .register_type::<Option<InitSizeModifier>>()
+            .register_type::<Option<InitAgeModifier>>()
+            .register_type::<Option<InitLifetimeModifier>>()
+            .register_type::<Option<AccelModifier>>()
+            .register_type::<Option<RadialAccelModifier>>()
+            .register_type::<Option<TangentAccelModifier>>()
+            .register_type::<Option<ForceFieldModifier>>()
+            .register_type::<Option<LinearDragModifier>>()
+            .register_type::<Option<AabbKillModifier>>()
+            .register_type::<Option<ParticleTextureModifier>>()
+            .register_type::<Option<SetColorModifier>>()
+            .register_type::<Option<ColorOverLifetimeModifier>>()
+            .register_type::<Option<SetSizeModifier>>()
+            .register_type::<Option<SizeOverLifetimeModifier>>()
+            .register_type::<Option<BillboardModifier>>()
+            .register_type::<Option<OrientAlongVelocityModifier>>();
 
         let effects_meta = EffectsMeta::new(render_device);
 
