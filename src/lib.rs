@@ -397,8 +397,8 @@ impl From<&PropertyInstance> for PropertyValue {
 /// particle effect, while ensuring conversely that internal mutations do not
 /// invalidate the compiled effect and do not trigger a costly shader rebuild
 /// for example.
-#[derive(Debug, Default, Clone, Component, Reflect)]
-#[reflect(Component)]
+#[derive(Debug, Default, Clone, Component, Reflect, FromReflect)]
+#[reflect(Component, Default)]
 pub struct ParticleEffect {
     /// Handle of the effect to instantiate.
     pub handle: Handle<EffectAsset>,

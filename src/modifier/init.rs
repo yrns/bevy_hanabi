@@ -117,6 +117,7 @@ impl InitModifier for InitAttributeModifier {
 /// This modifier requires the following particle attributes:
 /// - [`Attribute::POSITION`]
 #[derive(Debug, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitPositionCircleModifier {
     /// The circle center, relative to the emitter position.
     pub center: Vec3,
@@ -192,6 +193,7 @@ impl InitModifier for InitPositionCircleModifier {
 /// This modifier requires the following particle attributes:
 /// - [`Attribute::POSITION`]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitPositionSphereModifier {
     /// The sphere center, relative to the emitter position.
     pub center: Vec3,
@@ -265,6 +267,7 @@ impl InitModifier for InitPositionSphereModifier {
 /// This modifier requires the following particle attributes:
 /// - [`Attribute::POSITION`]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitPositionCone3dModifier {
     /// The cone height along its axis, between the base and top radii.
     pub height: f32,
@@ -331,6 +334,7 @@ impl InitModifier for InitPositionCone3dModifier {
 /// - [`Attribute::POSITION`]
 /// - [`Attribute::VELOCITY`]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitVelocityCircleModifier {
     /// The circle center, relative to the emitter position.
     pub center: Vec3,
@@ -377,6 +381,7 @@ impl InitModifier for InitVelocityCircleModifier {
 /// - [`Attribute::POSITION`]
 /// - [`Attribute::VELOCITY`]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitVelocitySphereModifier {
     /// Center of the sphere. The radial direction of the velocity is the
     /// direction from the sphere center to the particle position.
@@ -412,6 +417,7 @@ impl InitModifier for InitVelocitySphereModifier {
 /// - [`Attribute::POSITION`]
 /// - [`Attribute::VELOCITY`]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
+#[reflect(Default)]
 pub struct InitVelocityTangentModifier {
     /// Origin from which to derive the radial axis based on the particle
     /// position.
