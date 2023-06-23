@@ -115,7 +115,7 @@ impl ToWgslString for ValueOrProperty {
 #[derive(Debug, Clone, PartialEq, Reflect, FromReflect, Serialize, Deserialize)]
 pub struct AccelModifier {
     /// The acceleration to apply to all particles in the effect each frame.
-    accel: ValueOrProperty,
+    pub accel: ValueOrProperty,
 }
 
 impl AccelModifier {
@@ -201,9 +201,9 @@ impl UpdateModifier for AccelModifier {
 #[derive(Debug, Clone, Reflect, FromReflect, Serialize, Deserialize)]
 pub struct RadialAccelModifier {
     /// The acceleration to apply to all particles in the effect each frame.
-    accel: ValueOrProperty,
+    pub accel: ValueOrProperty,
     /// The center point the tangent direction is calculated from.
-    origin: Vec3,
+    pub origin: Vec3,
 }
 
 impl PartialEq for RadialAccelModifier {
@@ -322,11 +322,11 @@ impl UpdateModifier for RadialAccelModifier {
 #[derive(Debug, Clone, Reflect, FromReflect, Serialize, Deserialize)]
 pub struct TangentAccelModifier {
     /// The acceleration to apply to all particles in the effect each frame.
-    accel: ValueOrProperty,
+    pub accel: ValueOrProperty,
     /// The center point the tangent direction is calculated from.
-    origin: Vec3,
+    pub origin: Vec3,
     /// The axis defining the rotation plane and orientation.
-    axis: Vec3,
+    pub axis: Vec3,
 }
 
 impl PartialEq for TangentAccelModifier {
