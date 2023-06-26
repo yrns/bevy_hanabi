@@ -49,6 +49,12 @@ naga = "0.11"
 futures = "0.3"
 bevy-inspector-egui = "0.18"
 
+# Add bevy_scene for serialization testing
+[dev-dependencies.bevy]
+version = "0.10"
+default-features = false
+features = [ "bevy_core_pipeline", "bevy_render", "bevy_asset", "bevy_scene", "x11" ]
+
 [[example]]
 name = "firework"
 required-features = [ "bevy/bevy_winit", "bevy/bevy_pbr", "3d" ]

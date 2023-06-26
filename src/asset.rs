@@ -357,4 +357,53 @@ mod tests {
         let _effect_serde: EffectAsset = ron::from_str(&s).unwrap();
         // assert_eq!(effect, effect_serde);
     }
+
+    #[test]
+    fn test_scene_serialize() {
+        let mut app = App::default();
+        //app.add_plugins(DefaultPlugins);
+        app.add_plugin(bevy::asset::AssetPlugin::default());
+        //app.add_plugin(bevy::render::RenderPlugin::default());
+
+        // Split out type registration in HanabiPlugin?
+        //app.add_plugin(HanabiPlugin);
+        app.add_asset::<EffectAsset>();
+        app.register_type::<EffectAsset>();
+        app.register_type::<ParticleEffect>();
+        app.register_type::<Spawner>();
+
+        let effect = EffectAsset {
+            name: "Effect".into(),
+            capacity: 4096,
+            spawner: Spawner::rate(30.0.into()),
+            ..Default::default()
+        }
+        .init(InitPositionSphereModifier::default())
+        .init(InitVelocitySphereModifier::default())
+        .init(InitAgeModifier::default())
+        .init(InitLifetimeModifier::default())
+        .update(LinearDragModifier::default())
+        .update(ForceFieldModifier::default())
+        .render(ParticleTextureModifier::default())
+        .render(ColorOverLifetimeModifier::default())
+        .render(SizeOverLifetimeModifier::default())
+        .render(BillboardModifier::default());
+
+        let mut assets = app.world.resource_mut::<Assets<EffectAsset>>();
+        let handle = assets.add(effect);
+
+        let _entity = app
+            .world
+            .spawn(ParticleEffectBundle {
+                effect: ParticleEffect::new(handle),
+                ..Default::default()
+            })
+            .id();
+
+        let type_registry = app.world.resource::<AppTypeRegistry>();
+        let scene = bevy::scene::DynamicScene::from_world(&app.world, type_registry);
+        let serialized_scene = scene.serialize_ron(type_registry).unwrap();
+
+        dbg!(&serialized_scene);
+    }
 }
