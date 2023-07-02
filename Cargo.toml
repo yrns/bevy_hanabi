@@ -45,6 +45,9 @@ all-features = true
 wgpu = "0.15"
 # For shader snippet validation
 naga = "0.11"
+# For serialization
+tempfile = "3.6.0"
+image = { version = "0.24", default-features = false, features = ["png"] }
 
 futures = "0.3"
 bevy-inspector-egui = "0.18"

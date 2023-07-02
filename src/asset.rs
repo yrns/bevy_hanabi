@@ -648,4 +648,84 @@ mod tests {
 
         assert_eq!(asset_handle, asset_handle_de);
     }
+
+    #[test]
+    fn test_asset_loader() {
+        use std::io::Write;
+
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins);
+
+        let tmp_dir = tempfile::tempdir().unwrap();
+        app.add_plugin(AssetPlugin {
+            asset_folder: tmp_dir.path().to_str().unwrap().to_owned(),
+            watch_for_changes: false,
+        });
+
+        // The plugin doesn't work headless.
+        //app.add_plugin(HanabiPlugin);
+        app.add_asset::<EffectAsset>()
+            .init_asset_loader::<EffectAssetLoader>();
+
+        app.add_asset::<Image>();
+
+        // Create image asset path.
+        let mut image_path = std::path::PathBuf::from(tmp_dir.path());
+        image_path.push("default.png");
+
+        let image_handle = {
+            // Create image asset.
+            let image = Image::default();
+
+            // Save image to assets.
+            let size = image.size();
+            image::save_buffer(
+                &image_path,
+                &image.data,
+                size.x as u32,
+                size.y as u32,
+                image::ColorType::Rgba8,
+            )
+            .unwrap();
+
+            // Get image handle.
+            let mut images = app.world.get_resource_mut::<Assets<Image>>().unwrap();
+            images.add(image)
+        };
+
+        // Create effect with asset handle.
+        let effect = EffectAsset::new(64, Spawner::default(), Module::default()).render(
+            ParticleTextureModifier {
+                texture: AssetHandle::new(image_handle, image_path.clone()),
+            },
+        );
+
+        // Save effect.
+        let mut effect_path = std::path::PathBuf::from(tmp_dir.path());
+        effect_path.push("default.effect");
+        let s = ron::to_string(&effect).unwrap();
+        std::fs::File::create(&effect_path)
+            .and_then(|mut f| f.write_all(s.as_bytes()))
+            .unwrap();
+
+        // Load effect.
+        let asset_server = app.world.get_resource::<AssetServer>().unwrap();
+        let effect_handle: Handle<EffectAsset> = asset_server.load(effect_path);
+
+        // Wait one tick. There is no synchronous load.
+        app.update();
+        let effects = app.world.get_resource_mut::<Assets<EffectAsset>>().unwrap();
+        let effect = effects.get(&effect_handle).unwrap();
+
+        // Compare texture paths.
+        assert_eq!(
+            effect
+                .modifiers
+                .iter()
+                .filter_map(|modifier| modifier.as_any().downcast_ref::<ParticleTextureModifier>())
+                .map(|modifier| modifier.texture.asset_path.path())
+                .next(),
+            Some(image_path.as_path())
+        );
+    }
 }
